@@ -1,1 +1,1 @@
-"""HTTP API entrypoint (FastAPI). Implemented from Chapter 7."""
+"""HTTP API entrypoint (FastAPI)."""

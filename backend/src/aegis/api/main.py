@@ -1,0 +1,5 @@
+"""HTTP API process."""
+
+from aegis.api.app import create_app
+
+app = create_app()
