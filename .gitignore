@@ -1,0 +1,28 @@
+# Authoring — not the companion product
+.docs/
+book/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+
+# Node
+node_modules/
+frontend/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/

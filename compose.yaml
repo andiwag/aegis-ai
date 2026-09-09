@@ -1,0 +1,6 @@
+# Process wiring for Aegis Core.
+# Services are added as chapters implement them
+# (postgres, redis, minio, ollama, api, worker, web).
+name: aegis
+
+services: {}
