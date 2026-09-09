@@ -7,7 +7,10 @@ import uuid
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from starlette.responses import Response
+
+from aegis.db import check_connection, create_db_engine
 
 REQUEST_ID_HEADER = "X-Request-ID"
 DEFAULT_CORS_ORIGINS = "http://127.0.0.1:5173,http://localhost:5173"
@@ -32,6 +35,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.state.engine = create_db_engine()
 
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next) -> Response:
@@ -44,5 +48,13 @@ def create_app() -> FastAPI:
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/ready")
+    def ready(request: Request) -> JSONResponse:
+        try:
+            check_connection(request.app.state.engine)
+        except Exception:
+            return JSONResponse({"status": "unavailable"}, status_code=503)
+        return JSONResponse({"status": "ok"})
 
     return app

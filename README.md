@@ -10,7 +10,7 @@ This repository is **Aegis Core** — the production-grade platform the book bui
 ```bash
 git clone https://github.com/andiwag/aegis-ai
 cd aegis-ai
-git checkout book-ch08
+git checkout book-ch09
 ```
 
 Core is a modular monolith: one Python package (`backend/`) with an API process and a worker process, a React app (`frontend/`), and Docker Compose at the repository root.
