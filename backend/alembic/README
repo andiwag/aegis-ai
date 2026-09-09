@@ -1,0 +1,6 @@
+Schema migrations for Aegis Core. From `backend/`:
+
+```bash
+uv run alembic upgrade head
+uv run alembic revision --autogenerate -m "describe the change"
+```

@@ -1,21 +1,24 @@
-"""PostgreSQL engine. Schema arrives in the models chapter."""
+"""PostgreSQL engine, sessions, and declarative base."""
 
 from __future__ import annotations
 
-import os
-
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
-DEFAULT_DATABASE_URL = "postgresql+psycopg://aegis:aegis@127.0.0.1:5432/aegis"
+from aegis.settings import get_settings
 
 
-def database_url() -> str:
-    return os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+class Base(DeclarativeBase):
+    pass
 
 
 def create_db_engine(url: str | None = None) -> Engine:
-    return create_engine(url or database_url(), pool_pre_ping=True)
+    return create_engine(url or get_settings().database_url, pool_pre_ping=True)
+
+
+def create_session_factory(engine: Engine) -> sessionmaker[Session]:
+    return sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
 def check_connection(engine: Engine) -> None:

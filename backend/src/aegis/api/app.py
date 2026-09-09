@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import uuid
 
 from fastapi import FastAPI, Request
@@ -10,18 +9,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.responses import Response
 
-from aegis.db import check_connection, create_db_engine
+from aegis.db import check_connection, create_db_engine, create_session_factory
+from aegis.settings import get_settings
 
 REQUEST_ID_HEADER = "X-Request-ID"
-DEFAULT_CORS_ORIGINS = "http://127.0.0.1:5173,http://localhost:5173"
-
-
-def _cors_origins() -> list[str]:
-    raw = os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)
-    return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
 def create_app() -> FastAPI:
+    settings = get_settings()
     app = FastAPI(
         title="Aegis",
         version="0.0.0",
@@ -30,12 +25,13 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=_cors_origins(),
+        allow_origins=settings.cors_origin_list,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.state.engine = create_db_engine()
+    app.state.engine = create_db_engine(settings.database_url)
+    app.state.SessionLocal = create_session_factory(app.state.engine)
 
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next) -> Response:
