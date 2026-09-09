@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 
 REQUEST_ID_HEADER = "X-Request-ID"
+DEFAULT_CORS_ORIGINS = "http://127.0.0.1:5173,http://localhost:5173"
+
+
+def _cors_origins() -> list[str]:
+    raw = os.getenv("CORS_ORIGINS", DEFAULT_CORS_ORIGINS)
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
 def create_app() -> FastAPI:
@@ -16,6 +24,13 @@ def create_app() -> FastAPI:
         version="0.0.0",
         docs_url="/docs",
         redoc_url=None,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     @app.middleware("http")
